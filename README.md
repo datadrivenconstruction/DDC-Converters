@@ -13,8 +13,8 @@ Offline `.exe` tools to convert Revit®, IFC, DWG and DGN files into structured 
 
 |     Converter     | Description | Supported Formats | Executable |
 |-------------------|-------------|-------------------|------------|
-| `RvtExporter.exe` | Converts `.rvt` Revit® models to Excel + optional PDF sheets, schedules, and geometry | Revit® 2017–2024 | ✅ |
-| `IfcExporter.exe` | Converts `.ifc` (Industry Foundation Classes) models to Excel + DAE geometry | IFC2x3, IFC4 | ✅ |
+| `RvtExporter.exe` | Converts `.rvt` Revit® models to Excel + optional PDF sheets, schedules, and geometry | Revit® 2017–2025 | ✅ |
+| `IfcExporter.exe` | Converts `.ifc` (Industry Foundation Classes) models to Excel + DAE geometry | IFC2x3, IFC4x1, IFC4x4, IFC4x, IFC4.3 | ✅ |
 | `DwgExporter.exe` | Converts `.dwg` CAD files (2D/3D) to Excel tables | DWG 2007–2024 | ✅ |
 | `DgnExporter.exe` | Converts `.dgn` MicroStation® files to Excel tables (beta) | DGN V7, V8 | ✅ |
 
