@@ -1,0 +1,163 @@
+{
+  "name": "n8n_1_Revit_IFC_DWG_Conversation_simple",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚠️ Troubleshooting\nIf you encounter errors during conversion, be sure to reference the executable inside the **`datadrivenlibs`** folder. Use this path:\n\n```text\n\"DDC_Exporter_XXXXXXX\\datadrivenlibs\\XxxExporter.exe\"\n```\ninstead of:\n```text\n\"DDC_Exporter_XXXXXXX\\XxxExporter.exe\"\n```",
+        "height": 300,
+        "width": 560,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        528,
+        224
+      ],
+      "id": "06a9a9db-ced5-423b-a3a1-9f7494aea317",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "⭐ **If you find our tools helpful**, please **consider starring** our repository on [GitHub](https://github.com/datadrivenconstruction/cad2data-Revit-IFC-DWG-DGN-pipeline-with-conversion-validation-qto). \n\nYour support helps us improve and continue developing open solutions for the community!\n",
+        "height": 132,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -400
+      ],
+      "id": "5d337502-da31-4e35-9481-afaae2602ff8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -16
+      ],
+      "id": "9f2d392f-3e33-472f-9db3-3375606ff62d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9cbd4ec9-df24-41e8-b47a-720a4cdb733b",
+              "name": "path_to_converter",
+              "value": "C:\\Users\\Artem Boiko\\Desktop\\n8n\\cad2data-Revit-IFC-DWG-DGN-pipeline-with-conversion-validation-qto-main\\cad2data-Revit-IFC-DWG-DGN-pipeline-with-conversion-validation-qto-main\\DDC_Converter_Revit\\datadrivenlibs\\RvtExporter.exe",
+              "type": "string"
+            },
+            {
+              "id": "aa834467-80fb-476a-bac1-6728478834f0",
+              "name": "path_project_file",
+              "value": "C:\\Users\\Artem Boiko\\Desktop\\n8n\\cad2data-Revit-IFC-DWG-DGN-pipeline-with-conversion-validation-qto-main\\cad2data-Revit-IFC-DWG-DGN-pipeline-with-conversion-validation-qto-main\\Sample_Projects\\2023 racbasicsampleproject.rvt",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        -16
+      ],
+      "id": "9fc834a6-6d60-430e-99be-eb93e5d4939d",
+      "name": "Set path to file and converter"
+    },
+    {
+      "parameters": {
+        "executeOnce": "=",
+        "command": "=\"{{$json[\"path_to_converter\"]}}\" \"{{$json[\"path_project_file\"]}}\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -16
+      ],
+      "id": "8d1c478a-0231-47f9-bf4a-593f21b13dcf",
+      "name": "Converting the project into a structured form"
+    },
+    {
+      "parameters": {
+        "content": "## ⬇️ Only modify the variables here  \n— everything else works automatically",
+        "height": 384,
+        "width": 192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "3ce0d757-7611-4708-a402-ff97f283361c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Simple n8n workflow",
+        "height": 464,
+        "width": 688,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "1f42b881-3c0f-42bb-b25e-e7e7512b3f1c",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set path to file and converter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set path to file and converter": {
+      "main": [
+        [
+          {
+            "node": "Converting the project into a structured form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dc4f6db7-3d9d-4529-8f69-060b87acc545",
+  "meta": {
+    "instanceId": "faa70e11b7175129a74fd834d3451fdc1862589b16d68ded03f91ca7b1ecca12"
+  },
+  "id": "OxEUTQHRy461kBxF",
+  "tags": []
+}
