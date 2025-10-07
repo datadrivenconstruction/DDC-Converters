@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDC RVT2IFC Configuration Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+            color: #34495e;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 1px solid #e1e4e8;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #3a506b, #1c2541);
+            color: #ffffff;
+            padding: 50px 40px;
+            text-align: left;
+            border-bottom: 4px solid #fca311;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            padding: 30px 40px;
+            background: #fdfdff;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        
+        .control-section {
+            margin-bottom: 25px;
+        }
+        
+        .control-section h3 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .path-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: #fca311;
+            color: #1c2541;
+            font-weight: 700;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: #e0930f;
+            box-shadow: 0 10px 20px rgba(252, 163, 17, 0.25);
+        }
+        
+        .btn-secondary {
+            background: #3a506b;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #2c3e50;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(58, 80, 107, 0.25);
+        }
+        
+        .btn-danger {
+            background: #d90429;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #b80322;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(217, 4, 41, 0.3);
+        }
+        
+        .btn-preset {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-preset:hover {
+            transform: translateY(-2px);
+            background: #5a6268;
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.25);
+        }
+        
+        .output {
+            margin-top: 20px;
+            padding: 20px;
+            background: #1e1e1e;
+            border-radius: 8px;
+            display: none;
+            position: relative;
+            overflow: auto;
+        }
+        
+        .output pre {
+            color: #50fa7b;
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .output-header {
+            color: #f8f8f2;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 16px;
+            font-size: 12px;
+            background: #44475a;
+            color: #f8f8f2;
+        }
+        
+        .copy-button:hover {
+            background: #6272a4;
+        }
+        
+        .table-container {
+            padding: 20px 40px 40px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+        
+        th {
+            background: #1c2541;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e4e8;
+            background: white;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:hover td {
+            background: #f6f8fa;
+        }
+        
+        .checkbox-cell {
+            text-align: center;
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #fca311;
+        }
+        
+        .param-name {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-weight: 600;
+            color: #3a506b;
+            font-size: 14px;
+        }
+        
+        .type-info {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+        
+        .type-label {
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        .example {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #0f172a;
+            display: inline-block;
+        }
+        
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e1e4e8;
+            border-radius: 6px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #fca311;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.15);
+        }
+        
+        select {
+            cursor: pointer;
+        }
+        
+        .stats {
+            padding: 15px 40px;
+            background: #f8f9fc;
+            border-top: 1px solid #e1e4e8;
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .stats span {
+            margin: 0 15px;
+            font-weight: 600;
+        }
+        
+        .stats .count {
+            color: #1c2541;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .output.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+        
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            background: #1a1a1a;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+        
+        @media (max-width: 768px) {
+            .path-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DDC RVT2IFC Configuration Tool</h1>
+            <p class="subtitle">Professional IFC Export Parameter Configuration</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-section">
+                <h3>File Paths</h3>
+                <div class="path-inputs">
+                    <div class="input-group">
+                        <label for="converterPath">Converter Path (RVT2IFCconverter.exe):</label>
+                        <input type="text" id="converterPath" placeholder="C:\Program Files\DDC\RVT2IFCconverter.exe">
+                    </div>
+                    <div class="input-group">
+                        <label for="filePath">RVT File Path:</label>
+                        <input type="text" id="filePath" placeholder="C:\Users\MyUser\Documents\Project1.rvt">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Quick Presets</h3>
+                <div class="button-group">
+                    <button class="btn-preset tooltip" data-tooltip="Suitable for coordination, sharing with contractors, and model checking. Includes only basic geometry and key properties." onclick="loadPreset('standard')">Standard Export</button>
+                    <button class="btn-preset tooltip" data-tooltip="Suitable for QTO, cost estimation, and advanced validation. Exports all properties, classifications, and coordinates." onclick="loadPreset('extended')">Extended Export</button>
+                    <button class="btn-preset" onclick="loadPreset('custom')">Custom (Empty)</button>
+                    <button class="btn-preset" onclick="loadAmericanDefaults()">Load Default Values</button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3>Actions</h3>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="generateCommand()">Generate Command</button>
+                    <button class="btn-secondary" onclick="selectAll()">Select All</button>
+                    <button class="btn-danger" onclick="clearAll()">Clear All</button>
+                </div>
+            </div>
+            
+            <div class="output" id="output">
+                <button class="copy-button" onclick="copyToClipboard()">Copy</button>
+                <pre id="outputContent"></pre>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th width="50">Enable</th>
+                        <th width="200">Parameter</th>
+                        <th width="350">Type & Values</th>
+                        <th width="250">Example</th>
+                        <th>Current Value</th>
+                    </tr>
+                </thead>
+                <tbody id="paramTable">
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="stats" id="stats">
+            <span>Total Parameters: <span class="count" id="totalCount">0</span></span>
+            <span>Selected: <span class="count" id="selectedCount">0</span></span>
+        </div>
+    </div>
+
+    <script>
+        const parameters = [
+          // ===== Core / File =====
+          {
+            name: "FileVersion",
+            type: "enum (UInt8)",
+            values: "Aliases or numbers: ifc2x2cv, ifc2x2sbca, ifc2x3cv, ifc2x3/ifc2x3cv2, ifc2x3gsa, ifc2x3bfm, ifc2x3cobie, ifc4, ifc4rv, ifc4dtv, ifc4x3, ifcsg",
+            defaultExample: "ifc2x3",
+            inputType: "select",
+            options: [
+              {value: "ifc2x2cv", text: "IFC2x2 CV"},
+              {value: "ifc2x2sbca", text: "IFC2x2 SBCA"},
+              {value: "ifc2x3cv", text: "IFC2x3 CV"},
+              {value: "ifc2x3", text: "IFC2x3 CV2 (default)"},
+              {value: "ifc2x3gsa", text: "IFC2x3 GSA Concept"},
+              {value: "ifc2x3bfm", text: "IFC2x3 Basic FM Handover"},
+              {value: "ifc2x3cobie", text: "IFC2x3 COBie 2.4"},
+              {value: "ifc4", text: "IFC4 (general)"},
+              {value: "ifc4rv", text: "IFC4 Reference View"},
+              {value: "ifc4dtv", text: "IFC4 Design Transfer View"},
+              {value: "ifc4x3", text: "IFC4x3"},
+              {value: "ifcsg", text: "IFC-SG (IFC4 based)"}
+            ]
+          },
+          {
+            name: "FileType",
+            type: "enum (UInt8)",
+            values: "ifc (0), xml/ifcxml (1), zip/ifczip (2), hdf5 (3)",
+            defaultExample: "ifc",
+            inputType: "select",
+            options: [
+              {value: "ifc", text: "IFC"},
+              {value: "xml", text: "IFC XML"},
+              {value: "zip", text: "IFC ZIP"},
+              {value: "hdf5", text: "HDF5"}
+            ]
+          },
+          {
+            name: "LevelOfDetail",
+            type: "UInt8 (0..3)",
+            values: "0=ExtraLow, 1=Low, 2=Medium, 3=High",
+            defaultExample: "1",
+            inputType: "number",
+            min: 0, max: 3
+          },
+          { name: "Phase", type: "UInt64", values: "Active Phase element id (UInt64 handle), 0=none", defaultExample: "0", inputType: "number" },
+          {
+            name: "SpaceBound",
+            type: "enum (UInt8)",
+            values: "none(1), 1stlevel(2), 2ndlevel(3)",
+            defaultExample: "none",
+            inputType: "select",
+            options: [
+              {value: "none", text: "None"},
+              {value: "1stlevel", text: "1st level"},
+              {value: "2ndlevel", text: "2nd level"}
+            ]
+          },
+          {
+            name: "ProjOrigin",
+            type: "enum (UInt8)",
+            values: "currentshared(1), sitesurveypoint(2), projectbasepoint(3), internalcoordinates(4), projectbasepointtruenorth(5), internaltruenorth(6)",
+            defaultExample: "currentshared",
+            inputType: "select",
+            options: [
+              {value: "currentshared", text: "Current/Shared"},
+              {value: "sitesurveypoint", text: "Site Survey Point"},
+              {value: "projectbasepoint", text: "Project Base Point"},
+              {value: "internalcoordinates", text: "Internal Coordinates"},
+              {value: "projectbasepointtruenorth", text: "Project Base Point True North"},
+              {value: "internaltruenorth", text: "Internal True North"}
+            ]
+          },
+          { name: "Split", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "Steel", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "LinkedAsSeparate", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+
+          // ===== PropertySets group =====
+          {
+            name: "PropertySets",
+            type: "bitmask (UInt32 or tokens)",
+            values: "UInt32 value OR tokens separated by '|': BimRvPropSets|IgnoreIfcPg|IfcCommonPropSets|BaseQuantities|Schedules|SchedFilter|MaterialPropSets|UserDefPSets|ParamMapTable",
+            defaultExample: "IgnoreIfcPg",
+            inputType: "text"
+          },
+          { name: "BimRvPropSets", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "IgnoreIfcPg", type: "boolean", values: "y/n", defaultExample: "y", inputType: "bool" },
+          { name: "IfcCommonPropSets", type: "boolean", values: "y/n", defaultExample: "y", inputType: "bool" },
+          { name: "BaseQuantities", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "Schedules", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "SchedFilter", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "MaterialPropSets", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "UserDefPSets", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "UDefPSetsFileName", type: "string (.txt)", values: "TXT file path", defaultExample: "C:\\psets\\user_psets.txt", inputType: "text" },
+          { name: "ParamMapTable", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "ParamMapFileName", type: "string (.txt)", values: "TXT file path", defaultExample: "C:\\mapping\\parammap.txt", inputType: "text" },
+
+          // ===== Header / FH =====
+          { name: "FhFileDesc", type: "string", values: "File description", defaultExample: "Standard IFC export", inputType: "text" },
+          { name: "FhFileName", type: "string", values: "File name", defaultExample: "Project_Export.ifc", inputType: "text" },
+          { name: "FhAuthName", type: "string", values: "Author name", defaultExample: "User", inputType: "text" },
+          { name: "FhAuthEmail", type: "string", values: "Author email", defaultExample: "user@email.com", inputType: "text" },
+          { name: "FhOrganiz", type: "string", values: "Organization", defaultExample: "ODA", inputType: "text" },
+          { name: "FhAuthoriz", type: "string", values: "Authorization", defaultExample: "AuthorizationTest", inputType: "text" },
+          { name: "FhAppName", type: "string", values: "Application name", defaultExample: "Rvt2Ifc", inputType: "text" },
+          { name: "FhVersion", type: "string", values: "Version string", defaultExample: "20181217_1515(x64)", inputType: "text" },
+          { name: "FhFSchema", type: "string", values: "IFC schema label", defaultExample: "IFC4", inputType: "text" },
+          {
+            name: "FhExchange",
+            type: "enum (UInt8)",
+            values: "none(1), architectural(2), mep(3), structural(4)",
+            defaultExample: "none",
+            inputType: "select",
+            options: [
+              {value: "none", text: "None"},
+              {value: "architectural", text: "Architectural Reference Exchange"},
+              {value: "mep", text: "MEP Reference Exchange"},
+              {value: "structural", text: "Structural Reference Exchange"}
+            ]
+          },
+
+          // ===== Project Address =====
+          {
+            name: "PaPurpose",
+            type: "enum (UInt8)",
+            values: "none, office, site, home, distributionpoint, userdefined",
+            defaultExample: "none",
+            inputType: "select",
+            options: [
+              {value: "none", text: "None"},
+              {value: "office", text: "Office"},
+              {value: "site", text: "Site"},
+              {value: "home", text: "Home"},
+              {value: "distributionpoint", text: "Distribution Point"},
+              {value: "userdefined", text: "User Defined"}
+            ]
+          },
+          { name: "PaProjDesc", type: "string", values: "Project description", defaultExample: "", inputType: "text" },
+          { name: "PaUserDefPurpose", type: "string", values: "User purpose text", defaultExample: "", inputType: "text" },
+          { name: "PaAddrLine1", type: "string", values: "Address line 1", defaultExample: "", inputType: "text" },
+          { name: "PaAddrLine2", type: "string", values: "Address line 2", defaultExample: "", inputType: "text" },
+          { name: "PaPOBox", type: "string", values: "PO Box", defaultExample: "", inputType: "text" },
+          { name: "PaCity", type: "string", values: "City", defaultExample: "", inputType: "text" },
+          { name: "PaPostCode", type: "string", values: "Postal code", defaultExample: "", inputType: "text" },
+          { name: "PaState", type: "string", values: "State/Region", defaultExample: "", inputType: "text" },
+          { name: "PaCountry", type: "string", values: "Country code", defaultExample: "", inputType: "text" },
+          { name: "PaIntLoc", type: "string", values: "Internal location", defaultExample: "", inputType: "text" },
+          { name: "PaOverrideAddress", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "PaAddrToBuild", type: "boolean", values: "y/n", defaultExample: "y", inputType: "bool" },
+          { name: "PaAddrToSite", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+
+          // ===== Visibility / Selection =====
+          { name: "2DPlanViewEl", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "VisibleOnly", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "FilterViewId", type: "UInt64 or 'auto'", values: "View id handle or 'auto'", defaultExample: "", inputType: "text" },
+          { name: "RoomsIn3D", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+
+          // ===== CLOD (tessellation) =====
+          { name: "CLOD_MaxNumGridLines", type: "UInt32", values: "Max grid lines", defaultExample: "10000", inputType: "number" },
+          { name: "CLOD_MaxFacetEdgeLength", type: "double", values: "Max facet edge length", defaultExample: "100000", inputType: "text" },
+          { name: "CLOD_NormalTolerance", type: "double", values: "Normal tolerance (deg)", defaultExample: "360", inputType: "text" },
+          { name: "CLOD_SurfaceTolerance", type: "double", values: "Surface tolerance", defaultExample: "0", inputType: "text" },
+          { name: "CLOD_GridAspectRatio", type: "double", values: "Grid aspect ratio", defaultExample: "0", inputType: "text" },
+          { name: "CLOD_BetweenKnots", type: "UInt16", values: "Between knots", defaultExample: "0", inputType: "number" },
+          { name: "CLOD_PointsPerEdge", type: "UInt32", values: "Points per edge", defaultExample: "0", inputType: "number" },
+          { name: "CLOD_RecalculateSurfaceTolerance", type: "boolean", values: "y/n", defaultExample: "y", inputType: "bool" },
+          { name: "CLOD_FastMode", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "CLOD_UseTesselation", type: "boolean", values: "y/n", defaultExample: "y", inputType: "bool" },
+          { name: "CLOD_Curve3dPointsEpsilon", type: "double", values: "Curve points epsilon", defaultExample: "0.0", inputType: "text" },
+
+          // ===== Advanced options (bitmask + individual toggles) =====
+          {
+            name: "AdvancedOptions",
+            type: "bitmask (UInt32 or tokens)",
+            values: "Tokens with '|': PartsAsBuildElem|SolidModel|UseActiveView|2DRoomBound|IncSiteElev|StoreGuidAsParam|ExportBoundBox|KeepTesGeomAsTriangl|CoplanarFacesToExtrusion|DisableAnalyzers|SystemMaterialIsMain|ExportGeometryOnly",
+            defaultExample: "CoplanarFacesToExtrusion|SystemMaterialIsMain",
+            inputType: "text"
+          },
+          { name: "PartsAsBuildElem", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "SolidModel", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "UseActiveView", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "2DRoomBound", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "IncSiteElev", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "StoreGuidAsParam", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "ExportBoundBox", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "KeepTesGeomAsTriangl", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "CoplanarFacesToExtrusion", type: "boolean", values: "y/n", defaultExample: "y", inputType: "bool" },
+          { name: "DisableAnalyzers", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "SystemMaterialIsMain", type: "boolean", values: "y/n", defaultExample: "y", inputType: "bool" },
+          { name: "ExportGeometryOnly", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+
+          // ===== Naming behavior =====
+          { name: "UseFamTypeRef", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "UseVisibleNameAsEntityName", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+          { name: "UseTypeNameOnlyForIfcType", type: "boolean", values: "y/n", defaultExample: "n", inputType: "bool" },
+
+          // ===== Elements selection lists =====
+          { name: "ElementsToExport", type: "list of UInt64", values: "IDs separated by ';' or ','", defaultExample: "12345; 67890", inputType: "text" },
+          { name: "ElementsToExclude", type: "list of UInt64", values: "IDs separated by ';' or ','", defaultExample: "", inputType: "text" },
+          { name: "ExcludeList", type: "list of string", values: "Entity types separated by ';' or ','", defaultExample: "IfcSpace; IfcOpeningElement", inputType: "text" },
+
+          // ===== Classification =====
+          { name: "ClName", type: "string", values: "Classification name", defaultExample: "", inputType: "text" },
+          { name: "ClSource", type: "string", values: "Classification source", defaultExample: "", inputType: "text" },
+          { name: "ClEdition", type: "string", values: "Edition", defaultExample: "", inputType: "text" },
+          { name: "ClEditTime", type: "Int64", values: "Unix timestamp", defaultExample: "0", inputType: "number" },
+          { name: "ClDocLocation", type: "string", values: "Doc/URL", defaultExample: "", inputType: "text" },
+          { name: "ClFieldName", type: "string", values: "Field name", defaultExample: "", inputType: "text" },
+
+          // ===== Geo =====
+          { name: "GeoRefCRSName", type: "string", values: "CRS name", defaultExample: "", inputType: "text" },
+          { name: "GeoRefCRSDesc", type: "string", values: "CRS description", defaultExample: "", inputType: "text" },
+          { name: "GeoRefEPSGCode", type: "string", values: "EPSG code", defaultExample: "", inputType: "text" },
+          { name: "GeoRefGeodeticDatum", type: "string", values: "Geodetic datum", defaultExample: "", inputType: "text" },
+          { name: "GeoRefMapUnit", type: "string", values: "Map unit", defaultExample: "meter", inputType: "text" },
+
+          // ===== Facility =====
+          {
+            name: "FacilityType",
+            type: "enum (UInt8)",
+            values: "notdefined(1), building(2), bridge(3), railway(4), road(5), marinefacility(6)",
+            defaultExample: "building",
+            inputType: "select",
+            options: [
+              {value: "notdefined", text: "Not defined"},
+              {value: "building", text: "Building"},
+              {value: "bridge", text: "Bridge"},
+              {value: "railway", text: "Railway"},
+              {value: "road", text: "Road"},
+              {value: "marinefacility", text: "Marine facility"}
+            ]
+          },
+          { name: "FacilityPredefinedType", type: "string", values: "Free text", defaultExample: "", inputType: "text" },
+
+          // ===== Category mapping (.txt only) =====
+          { name: "CategoryMappingFile", type: "string (.txt)", values: "TXT file path", defaultExample: "C:\\mapping\\categories.txt", inputType: "text" },
+          { name: "CategoryMappingTemplate", type: "string (.txt)", values: "TXT file path", defaultExample: "C:\\mapping\\category_template.txt", inputType: "text" },
+
+          // ===== Company / Contact =====
+          { name: "CompanyType", type: "string", values: "Company type", defaultExample: "", inputType: "text" },
+          { name: "CompanyName", type: "string", values: "Company name", defaultExample: "", inputType: "text" },
+          { name: "StreetAddr", type: "string", values: "Company street", defaultExample: "", inputType: "text" },
+          { name: "City", type: "string", values: "Company city", defaultExample: "", inputType: "text" },
+          { name: "State", type: "string", values: "Company state", defaultExample: "", inputType: "text" },
+          { name: "PostCode", type: "string", values: "Company postal code", defaultExample: "", inputType: "text" },
+          { name: "Country", type: "string", values: "Company country", defaultExample: "", inputType: "text" },
+          { name: "CompanyPhone", type: "string", values: "Company phone", defaultExample: "", inputType: "text" },
+          { name: "CompanyEmail", type: "string", values: "Company email", defaultExample: "", inputType: "text" },
+
+          // ===== Building / Project / Site =====
+          { name: "BuildName", type: "string", values: "Building name", defaultExample: "", inputType: "text" },
+          { name: "BuildType", type: "string", values: "Building type", defaultExample: "", inputType: "text" },
+          { name: "BuildDesc", type: "string", values: "Building description", defaultExample: "", inputType: "text" },
+          { name: "ProjName", type: "string", values: "Project name", defaultExample: "", inputType: "text" },
+          { name: "ProjDesc", type: "string", values: "Project description (header)", defaultExample: "", inputType: "text" },
+          { name: "ProjPhase", type: "string", values: "Project phase", defaultExample: "", inputType: "text" },
+          { name: "SiteLoc", type: "string", values: "Site location", defaultExample: "", inputType: "text" },
+          { name: "SiteDesc", type: "string", values: "Site description", defaultExample: "", inputType: "text" }
+        ];
+
+
+        function createTable() {
+          const tbody = document.getElementById('paramTable');
+          tbody.innerHTML = '';
+
+          parameters.forEach(param => {
+            const tr = document.createElement('tr');
+
+            const tdCheck = document.createElement('td');
+            tdCheck.className = 'checkbox-cell';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = 'check_' + param.name;
+            checkbox.onchange = updateStats;
+            tdCheck.appendChild(checkbox);
+            tr.appendChild(tdCheck);
+
+            const tdName = document.createElement('td');
+            tdName.innerHTML = `<span class="param-name">${param.name}</span>`;
+            tr.appendChild(tdName);
+
+            const tdType = document.createElement('td');
+            tdType.innerHTML = `<div class="type-info"><span class="type-label">${param.type}</span><br>${param.values}</div>`;
+            tr.appendChild(tdType);
+
+            const tdExample = document.createElement('td');
+            tdExample.innerHTML = `<span class="example">${param.defaultExample}</span>`;
+            tr.appendChild(tdExample);
+
+            const tdInput = document.createElement('td');
+            let input;
+
+            if (param.inputType === 'bool') {
+              input = document.createElement('select');
+              input.innerHTML = '<option value="">--</option><option value="y">Yes (y)</option><option value="n">No (n)</option>';
+            } else if (param.inputType === 'select') {
+              input = document.createElement('select');
+              input.innerHTML = '<option value="">--</option>';
+              (param.options || []).forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.text;
+                input.appendChild(option);
+              });
+            } else if (param.inputType === 'number') {
+              input = document.createElement('input');
+              input.type = 'number';
+              if (param.min !== undefined) input.min = param.min;
+              if (param.max !== undefined) input.max = param.max;
+            } else {
+              input = document.createElement('input');
+              input.type = 'text';
+            }
+
+            input.id = 'input_' + param.name;
+            tdInput.appendChild(input);
+            tr.appendChild(tdInput);
+
+            tbody.appendChild(tr);
+          });
+
+          document.getElementById('totalCount').textContent = parameters.length;
+
+          updateStats();
+        }
+
+
+        function loadAmericanDefaults() {
+            parameters.forEach(param => {
+                const checkbox = document.getElementById('check_' + param.name);
+                const input = document.getElementById('input_' + param.name);
+                if (checkbox && input) {
+                    checkbox.checked = true;
+                    input.value = param.defaultExample;
+                }
+            });
+            updateStats();
+        }
+
+        function loadPreset(preset) {
+            clearAll();
+
+            const presets = {
+                standard: {
+                    params: {
+                        'FileVersion': 'ifc4rv', 'FileType': 'ifc', 'LevelOfDetail': '2', 'IfcCommonPropSets': 'y', 'BaseQuantities': 'n', 'BimRvPropSets': 'n', 'MaterialPropSets': 'n', 'Schedules': 'n', 'SchedFilter': 'n', 'PaCity': 'use_default', 'PaCountry': 'use_default', 'FhFileDesc': 'Standard IFC export', 'FhAuthName': 'use_default', 'FhOrganiz': 'use_default', 'FhExchange': 'none', 'VisibleOnly': 'y', 'FilterViewId': 'Coordination', 'RoomsIn3D': 'n', '2DPlanViewEl': 'n', '2DRoomBound': 'n', 'ExportBoundBox': 'n', 'KeepTesGeomAsTriangl': 'n', 'DisableAnalyzers': 'n', 'ProjOrigin': 'currentshared'
+                    }
+                },
+                extended: {
+                    params: {
+                        'FileVersion': 'ifc4dtv', 'FileType': 'ifc', 'LevelOfDetail': '3', 'IfcCommonPropSets': 'y', 'BaseQuantities': 'y', 'BimRvPropSets': 'y', 'MaterialPropSets': 'y', 'Schedules': 'y', 'SchedFilter': 'y', 'PaProjDesc': 'use_default', 'PaCity': 'use_default', 'PaPostCode': 'use_default', 'PaCountry': 'use_default', 'PaAddrToBuild': 'y', 'PaAddrToSite': 'y', 'FhFileDesc': 'Extended IFC export with quantities and classifications', 'FhAuthName': 'use_default', 'FhAuthEmail': 'use_default', 'FhOrganiz': 'use_default', 'FhAuthoriz': 'use_default', 'FhAppName': 'use_default', 'FhVersion': 'use_default', 'FhFSchema': 'IFC4', 'FhExchange': 'architectural', 'VisibleOnly': 'n', 'RoomsIn3D': 'y', '2DPlanViewEl': 'y', '2DRoomBound': 'y', 'ExportBoundBox': 'y', 'KeepTesGeomAsTriangl': 'y', 'DisableAnalyzers': 'n', 'CategoryMappingFile': 'use_default', 'ClName': 'use_default', 'ClEdition': 'use_default', 'ClEditTime': 'use_default', 'ClDocLocation': 'use_default', 'ClFieldName': 'ClassificationCode', 'ProjOrigin': 'sitesurveypoint', 'GeoRefCRSName': 'use_default', 'GeoRefEPSGCode': 'use_default', 'GeoRefMapUnit': 'meter'
+                    }
+                }
+            };
+
+            const selectedPreset = presets[preset];
+
+            if (selectedPreset) {
+                Object.keys(selectedPreset.params).forEach(paramName => {
+                    const checkbox = document.getElementById('check_' + paramName);
+                    if (checkbox) checkbox.checked = true;
+
+                    let value = selectedPreset.params[paramName];
+                    if (value === 'use_default') {
+                        const param = parameters.find(p => p.name === paramName);
+                        value = param ? param.defaultExample : '';
+                    }
+                    
+                    const input = document.getElementById('input_' + paramName);
+                    if (input) input.value = value;
+                });
+            }
+            
+            updateStats();
+        }
+
+        function clearAll() {
+            parameters.forEach(param => {
+                const checkbox = document.getElementById('check_' + param.name);
+                const input = document.getElementById('input_' + param.name);
+                if (checkbox) checkbox.checked = false;
+                if (input) input.value = '';
+            });
+            document.getElementById('output').classList.remove('show');
+            updateStats();
+        }
+
+        function selectAll() {
+            parameters.forEach(param => {
+                const checkbox = document.getElementById('check_' + param.name);
+                if (checkbox) checkbox.checked = true;
+            });
+            updateStats();
+        }
+
+        function updateStats() {
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            document.getElementById('selectedCount').textContent = checked;
+        }
+
+        function generateCommand() {
+            const converterPath = document.getElementById('converterPath').value;
+            const filePath = document.getElementById('filePath').value;
+
+            if (!converterPath || !filePath) {
+                alert('Please provide the path to the converter and the RVT file.');
+                return;
+            }
+
+            const selectedParams = [];
+            parameters.forEach(param => {
+                const checkbox = document.getElementById('check_' + param.name);
+                const input = document.getElementById('input_' + param.name);
+                
+                if (checkbox && checkbox.checked && input && input.value) {
+                    const needsQuotes = /[\s|;=]/.test(input.value);
+                    const value = needsQuotes ? `"${input.value.replace(/"/g, '\\"')}"` : input.value;
+                    selectedParams.push(`${param.name}=${value}`);
+                }
+            });
+            
+            if (selectedParams.length === 0) {
+                alert('Please select at least one parameter to generate the command.');
+                return;
+            }
+            
+            const outputPath = filePath.replace(/\.rvt$/i, '.ifc');
+            const command1 = `"${converterPath}" "${filePath}" "${outputPath}" mode=custom ${selectedParams.join(' ')}`;
+            
+            const configParams = [];
+            parameters.forEach(param => {
+                const checkbox = document.getElementById('check_' + param.name);
+                const input = document.getElementById('input_' + param.name);
+                if (checkbox && checkbox.checked && input && input.value) {
+                    const needsQuotes2 = /[\s|;=]/.test(input.value);
+                    const value2 = needsQuotes2 ? `"${input.value.replace(/"/g, '\\"')}"` : input.value;
+                    configParams.push(`${param.name}=${value2}`);
+                }
+            });
+            const command2 = configParams.join('; ');
+            
+            const outputDiv = document.getElementById('output');
+            const outputContent = document.getElementById('outputContent');
+            outputContent.innerHTML = `<span class="output-header">Option 1 (For Command-Line Execution):</span>${command1}\n\n<span class="output-header">Option 2 (For the "Custom" field in the UI version):</span>${command2}`;
+            outputDiv.classList.add('show');
+        }
+
+        function copyToClipboard() {
+            const outputContent = document.getElementById('outputContent').textContent;
+            navigator.clipboard.writeText(outputContent).then(() => {
+                const button = document.querySelector('.copy-button');
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // Initialize table
+        createTable();
+    </script>
+</body>
+</html>
